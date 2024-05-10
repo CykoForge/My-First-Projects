@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
 
 public class App {
@@ -28,7 +30,7 @@ public class App {
        setupGUI();
          }
 public static void setupGUI(){
-    menu.setSize(650,550);
+    menu.setSize(650,650);
     menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     menu.setLayout(new BorderLayout());
 
@@ -37,6 +39,7 @@ public static void setupGUI(){
     JPanel welcomePanel = new JPanel();
     welcomePanel.setLayout(null);
     welcomePanel.setBackground(Color.LIGHT_GRAY);
+
     JLabel title = new JLabel("Welcome to your Bank!");
     title.setFont(new Font("Courier", Font.BOLD, 30));
     title.setBounds(50,100, 400, 50);
@@ -78,9 +81,22 @@ public static void setupGUI(){
     quit.setBackground(Color.DARK_GRAY);
     welcomePanel.add(quit);
 
+    JButton guestButton = new JButton("Guest");
+    guestButton.setFont(new Font("Courier", Font.PLAIN, 20));
+    guestButton.setForeground(Color.WHITE);
+    guestButton.setBounds(50, 490, 200, 50);
+    guestButton.setBackground(Color.DARK_GRAY);
+    welcomePanel.add(guestButton);
+
+
 //Registration Panel 
     JPanel regPanel = new JPanel();
     regPanel.setLayout(null);
+
+    JLabel regTitle = new JLabel("Enter credentials to register below");
+    regTitle.setFont(new Font("Courier", Font.BOLD, 16));
+    regTitle.setBounds(50,100, 400, 50);
+    regPanel.add(regTitle);
 
     JLabel fullName = new JLabel("Full Name: ");
     fullName.setBounds(50,150, 150, 30);
@@ -154,8 +170,16 @@ public static void setupGUI(){
 // Register Sumbit Button
 submiButton.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent e) {
-        String username = userTextField.getText();
-        String password = new String(passTextField.getPassword());
+        String username = userTextField.getText().trim();
+        String password = new String(passTextField.getPassword()).trim();
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(menu, "Username and password cannot be empty.");
+            return;
+        }
+        if (username.length() < 7 || !password.matches(".*[^a-zA-Z0-9].*") || password.length() < 7) {
+            JOptionPane.showMessageDialog(menu, "Username or password does not meet the criteria.");
+            return;
+        }
         if (!userCredentials.containsKey(username)) {
             userCredentials.put(username, password);
             JOptionPane.showMessageDialog(menu, "Registration successful. You can now login.");
@@ -165,7 +189,7 @@ submiButton.addActionListener(new ActionListener() {
         }
     }
 });
-
+//Login Panel 
     JPanel loginPanel = new JPanel();
     loginPanel.setLayout(null);
 
@@ -202,18 +226,6 @@ submiButton.addActionListener(new ActionListener() {
     submiLogButton.setBounds(150,300,100,30);
     loginPanel.add(submiLogButton);
 
-    backTo.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e){
-            cardLayout.show(cardPanel, "Welcome");
-        }
-    });
-
-    backTo1.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e){
-            cardLayout.show(cardPanel, "Welcome");
-        }
-    });
-
     submiLogButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
             String username = userLogTextField.getText();
@@ -223,6 +235,70 @@ submiButton.addActionListener(new ActionListener() {
                 cardLayout.show(cardPanel, "Bank");
             } else {
                 JOptionPane.showMessageDialog(menu, "Invalid username or password.");
+            }
+        }
+    });
+
+//Forgot Password Panel
+    JPanel fPPanel = new JPanel();
+    fPPanel.setLayout(null);
+
+    JLabel fPHeader = new JLabel("Enter your username below");
+    fPHeader.setFont(new Font("Courier", Font.BOLD, 23));
+    fPHeader.setBounds(50,100,500,50);
+    fPPanel.add(fPHeader);
+
+    JButton backTo2 = new JButton("Back to Menu");
+    backTo2.setBounds(400 ,300,150,30);
+    fPPanel.add(backTo2);
+
+    JLabel fPUsername = new JLabel("Username: ");
+    fPUsername.setBounds(50,200,150,30);
+    fPPanel.add(fPUsername);
+
+    JTextField fPUserTextField = new JTextField();
+    fPUserTextField.setBounds(220,200,150,30);
+    fPPanel.add(fPUserTextField);
+
+    JLabel fPnewPass = new JLabel("New Password :");
+    fPnewPass.setBounds(50, 250, 150, 30);
+    fPPanel.add(fPnewPass);
+
+    JPasswordField fPnewPassText = new JPasswordField();
+    fPnewPassText.setBounds(220, 250, 150,30);
+    fPPanel.add(fPnewPassText);
+
+    JLabel fPnewPass1 = new JLabel("Confirm Password :");
+    fPnewPass1.setBounds(50, 300, 150, 30);
+    fPPanel.add(fPnewPass1);
+
+    JPasswordField fPnewPassText1 = new JPasswordField();
+    fPnewPassText1.setBounds(220, 300, 150,30);
+    fPPanel.add(fPnewPassText1);
+
+    JButton submiFPButton = new JButton("Submit");
+    submiFPButton.setBounds(150,350,100,30);
+    fPPanel.add(submiFPButton);
+
+    submiFPButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            String username = fPUserTextField.getText().trim();
+            String password1 = new String(fPnewPassText.getPassword()).trim();
+            String password2 = new String(fPnewPassText1.getPassword()).trim();
+            if (!password1.equals(password2)) {
+                JOptionPane.showMessageDialog(menu, "Passwords do not match.");
+                return;
+            }
+            if (password1.length() < 7 || !password1.matches(".*[^a-zA-Z0-9].*")) {
+                JOptionPane.showMessageDialog(menu, "Password must be at least 7 characters long and contain at least one special character.");
+                return;
+            }
+            if (userCredentials.containsKey(username)) {
+                userCredentials.put(username, password1);
+                JOptionPane.showMessageDialog(menu, "Password reset successful.");
+                cardLayout.show(cardPanel, "Login");
+            } else {
+                JOptionPane.showMessageDialog(menu, "Username does not exist.");
             }
         }
     });
@@ -277,6 +353,34 @@ submiButton.addActionListener(new ActionListener() {
     settings.setBackground(Color.DARK_GRAY);
     settings.setBounds(360, 425, 125, 30);
     bankPanel.add(settings);
+//Settings Page
+    JLabel settingsHeader = new JLabel("Settings: ");
+    settingsHeader.setFont(new Font("Courier", Font.BOLD, 23));
+    settingsHeader.setBounds(50,100, 500, 50);
+    settingPanel.add(settingsHeader);
+
+    JCheckBox goPaperLess = new JCheckBox("Go Paperless ");
+    goPaperLess.setFont(new Font("Courier", Font.PLAIN, 12 ));
+    goPaperLess.setBounds(50,275,150,12);
+    settingPanel.add(goPaperLess);
+ 
+    JToggleButton darkTheme = new JToggleButton("Dark Theme ");
+    darkTheme.setFont(new Font("Courier", Font.PLAIN, 12));
+    darkTheme.setBounds(50,225, 200, 30);
+    settingPanel.add(darkTheme);
+
+    JButton backTo4 = new JButton("Back ");
+    backTo4.setFont(new Font("Courier", Font.PLAIN, 12));
+    backTo4.setForeground(Color.WHITE);
+    backTo4.setBackground(Color.DARK_GRAY);
+    backTo4.setBounds(220,425,125,30);
+    settingPanel.add(backTo4);
+
+    backTo4.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            cardLayout.show(cardPanel, "Bank");
+        }
+    });
 
 //Statement Page
     JPanel statementPanel = new JPanel();
@@ -293,6 +397,19 @@ submiButton.addActionListener(new ActionListener() {
     statements.setBackground(Color.DARK_GRAY);
     statements.setBounds(220, 425, 125, 30);
     bankPanel.add(statements);
+
+    JButton backTo3 = new JButton("Back ");
+    backTo3.setFont(new Font("Courier", Font.PLAIN, 12));
+    backTo3.setForeground(Color.WHITE);
+    backTo3.setBackground(Color.DARK_GRAY);
+    backTo3.setBounds(220,425,125,30);
+    statementPanel.add(backTo3);
+
+    backTo3.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            cardLayout.show(cardPanel, "Bank");
+        }
+    });
 
     statements.addActionListener(new ActionListener(){
         public void actionPerformed(ActionEvent e){
@@ -315,6 +432,7 @@ submiButton.addActionListener(new ActionListener() {
     cardPanel.add(welcomePanel, "Welcome");
     cardPanel.add(regPanel, "Register");
     cardPanel.add(loginPanel, "Login");
+    cardPanel.add(fPPanel, "ForgotPassword");
     cardPanel.add(bankPanel, "Bank");
     cardPanel.add(settingPanel, "Setting");
     cardPanel.add(statementPanel, "Statements");
@@ -331,9 +449,96 @@ submiButton.addActionListener(new ActionListener() {
         }
     });
 
+    forgotPassword.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            cardLayout.show(cardPanel, "ForgotPassword");
+        }
+    });
+
+    guestButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            cardLayout.show(cardPanel, "Bank");
+        }
+    });
+//Back to Menu Links
+    backTo.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            cardLayout.show(cardPanel, "Welcome");
+        }
+    });
+
+    backTo1.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            cardLayout.show(cardPanel, "Welcome");
+        }
+    });
+
+    backTo2.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            cardLayout.show(cardPanel, "Welcome");
+        }
+    });
+
     quit.addActionListener(e -> System.exit(0));
 
+    darkTheme.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            if (darkTheme.isSelected()) {
+                darkTheme.setText("Light Theme");
+                setColorTheme(Color.DARK_GRAY);
+                wordStatement.setForeground(Color.WHITE);
+                settingsHeader.setForeground(Color.WHITE);
+                savingsAmountLabel.setForeground(Color.WHITE);
+                checkingAmountLabel.setForeground(Color.WHITE);
+                bankHeader.setForeground(Color.WHITE);
+                fPnewPass1.setForeground(Color.WHITE);
+                fPnewPass.setForeground(Color.WHITE);
+                fPUsername.setForeground(Color.WHITE);
+                fPHeader.setForeground(Color.WHITE);
+                loginPass.setForeground(Color.WHITE);
+                userLogLabel.setForeground(Color.WHITE);
+                loginTitle.setForeground(Color.WHITE);
+                loginTitle.setForeground(Color.WHITE);
+                userLabel.setForeground(Color.WHITE);
+                fullName.setForeground(Color.WHITE);
+                regTitle.setForeground(Color.WHITE);
+                creator.setForeground(Color.WHITE);
+                title.setForeground(Color.WHITE);
+            } else {
+                darkTheme.setText("Dark Theme"); 
+                setColorTheme(Color.LIGHT_GRAY);
+                wordStatement.setForeground(Color.BLACK);
+                settingsHeader.setForeground(Color.BLACK);
+                savingsAmountLabel.setForeground(Color.BLACK);
+                checkingAmountLabel.setForeground(Color.BLACK);
+                bankHeader.setForeground(Color.BLACK);
+                fPnewPass1.setForeground(Color.BLACK);
+                fPnewPass.setForeground(Color.BLACK);
+                fPUsername.setForeground(Color.BLACK);
+                fPHeader.setForeground(Color.BLACK);
+                loginPass.setForeground(Color.BLACK);
+                userLogLabel.setForeground(Color.BLACK);
+                loginTitle.setForeground(Color.BLACK);
+                loginTitle.setForeground(Color.BLACK);
+                userLabel.setForeground(Color.BLACK);
+                fullName.setForeground(Color.BLACK);
+                regTitle.setForeground(Color.BLACK);
+                creator.setForeground(Color.BLACK);
+                title.setForeground(Color.BLACK);
+            }
+        }
     
+    private void setColorTheme(Color color) {
+        welcomePanel.setBackground(color);
+        bankPanel.setBackground(color);
+        settingPanel.setBackground(color);
+        transferPanel.setBackground(color);
+        regPanel.setBackground(color);
+        loginPanel.setBackground(color);
+        fPPanel.setBackground(color);
+        statementPanel.setBackground(color); 
+        }
+    });
 
     menu.add(cardPanel, BorderLayout.CENTER);
     cardLayout.show(cardPanel, "Welcome");
